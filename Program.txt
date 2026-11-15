@@ -1,0 +1,61 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Device_Maintenance_and_Repair_Center
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            // الاشتراك في الحدث (Event Subscription)
+            ServiceEventManager.OnStatusChanged += displayMessage =>
+            {
+                Console.WriteLine($"\n[SYSTEM NOTIFICATION]: {displayMessage}");
+            };
+            // إنشاء قائمة لمعالجة الكائنات بشكل متعدد الأشكال (Polymorphism)
+            List<Appliance> devices = new List<Appliance>();
+
+            // إضافة أجهزة
+            Appliance ref1 = new Refrigerator("REF-101", "Ahmad", 100.0, true);
+            Appliance wash1 = new WashingMachine("WSH-202", "Sara", 120.0, 10);
+            Appliance ac1 = new AirConditioner("AC-303", "Mohamad", 150.0, true);
+
+            if (ValidationHelper.IsValidSerialNumber(ref1.SerialNumber))
+            {
+                devices.Add(ref1);
+                ValidationHelper.IncrementDeviceCount();
+            }
+
+            if (ValidationHelper.IsValidSerialNumber(wash1.SerialNumber))
+            {
+                devices.Add(wash1);
+                ValidationHelper.IncrementDeviceCount();
+            }
+
+            if (ValidationHelper.IsValidSerialNumber(ac1.SerialNumber))
+            {
+                devices.Add(ac1);
+                ValidationHelper.IncrementDeviceCount();
+            }
+
+            Console.WriteLine("=== Maintenance Center Appliance List ===");
+            double totalCost = 0;
+
+            foreach (var device in devices)
+            {
+                Console.WriteLine(device.GetDeviceDetails());
+                totalCost += device.CalculateRepairCost();
+            }
+
+            Console.WriteLine($"\nTotal Repair Cost for All Devices: ${totalCost}");
+            Console.WriteLine($"Total Accepted Devices in System: {ValidationHelper.TotalDevicesProcessed}");
+
+            // إطلاق حدث تغيير حالة
+            Console.WriteLine("\n--- Starting Repair Operations ---");
+            devices[0].StartRepair();
+            ServiceEventManager.TriggerStatusChange($"Device S/N: {devices[0].SerialNumber} status changed to: {devices[0].Status}");
+
+            Console.ReadKey();
+        }
+    }
+}
