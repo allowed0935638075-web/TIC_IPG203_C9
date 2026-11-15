@@ -1,0 +1,19 @@
+﻿using System;
+
+namespace Device_Maintenance_and_Repair_Center
+{
+    // تعريف التفويض للإشعار بتغير حالة الجهاز
+    public delegate void StatusChangedHandler(string message);
+
+    public static class ServiceEventManager
+    {
+        // الحدث المرتبط بالتفويض
+        public static event StatusChangedHandler OnStatusChanged;
+
+        // دالة إطلاق الحدث
+        public static void TriggerStatusChange(string message)
+        {
+            OnStatusChanged?.Invoke(message);
+        }
+    }
+}
